@@ -32,7 +32,6 @@ async function getFoundTitles(n){
                 else {
                     return
                 }
-
             }
         }
         catch (e) {
