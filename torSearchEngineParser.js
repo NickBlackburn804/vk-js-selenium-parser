@@ -24,8 +24,15 @@ async function getFoundTitles(n){
     await driver.findElements(By.tagName('h4')).then(async function (titles) {
         try{
             for (let key = 0; key < n; key++){
-                await found.push(await titles[key].getText())
-                 await console.log(await titles[key].getText())
+                if(await titles[key]){
+                    let link = await titles[key].getText();
+                    await found.push(link)
+                    await console.log(link)
+                }
+                else {
+                    return
+                }
+
             }
         }
         catch (e) {
