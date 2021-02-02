@@ -21,8 +21,6 @@ function sleep(ms)
 
 
 async function getNotifications(){
-
-
     await driver.findElements(By.className('feedback_content')).then(async function (notifications) {
         try{
             for (let key in notifications) {
@@ -35,7 +33,6 @@ async function getNotifications(){
             console.log(e)
         }
     })
-
 }
 
 
@@ -50,15 +47,10 @@ async function notificationsParser(driver) {
     let not_btn = driver.wait(webdriver.until.elementLocated(By.id('top_notify_btn')));
     await not_btn.click();
     await not_btn.click();
-
-
     await driver.wait(webdriver.until.elementLocated(By.className('feed_row _feed_row')))
         .then(async ()=>{
             await getNotifications();
         })
-
-
-
     console.log(notsList)
     fs.writeFileSync('notifications', JSON.stringify(parsedPosts));
     await driver.quit();
