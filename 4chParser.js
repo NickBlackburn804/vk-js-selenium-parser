@@ -6,27 +6,27 @@ const fs = require('fs');
         headless: false
     });
     let images = [];
-    let boards = [];
+    // let boards = [];
     const context = await browser.newContext();
     const page = await context.newPage();
-    const content = await page.content();
-    await page.goto('https://www.4chan.org/')
-        let $2 = cheerio.load(content)
-    await Promise.all([
-    $2('.boardlink').each((idx, elem) => {
-        let link = $2(elem);
-        boards.push(link.attr('href'));
-    })
-])
 
-    for(let board in boards){
-        await page.goto(boards[board]);
+    // await page.goto('https://www.4chan.org/')
+    // let $2 = cheerio.load(content)
+    // await Promise.all([
+    //     $2('.boardlink').each((idx, elem) => {
+    //         let link = $2(elem);
+    //         boards.push(link.attr('href'));
+    //     })
+    // ])
+
+    // for(let board in boards){
+        await page.goto('https://boards.4chan.org/gif/');
         let links = [];
         const content = await page.content();
         let $ = cheerio.load(content);
         $('.replylink').each((idx, elem) => {
             let link = $(elem);
-            links.push('https://boards.4chan.org/s/' + link.attr('href'));
+            links.push('https://boards.4chan.org/gif/' + link.attr('href'));
         })
         fs.writeFileSync('4chLinks.txt', links)
         let Threads = {};
@@ -55,9 +55,9 @@ const fs = require('fs');
             await getThread();
         }
         Threads = JSON.stringify(Threads);
-        fs.writeFileSync(board + '4chan' + '.txt', Threads)
-        fs.writeFileSync(board + '_imgs4.txt', images)
-    }
+        fs.writeFileSync('4chan' + '.txt', Threads)
+        fs.writeFileSync('_imgs4.txt', images)
+    // }
 
 
 
