@@ -26,48 +26,48 @@ const boards = ['https://2ch.hk/au/', 'https://2ch.hk/bi/', 'https://2ch.hk/biz/
     });
     const context = await browser.newContext();
     const page = await context.newPage();
-    for(let board in boards){
+    for(let board in boards){ // проход по доскам
         await page.goto(boards[board]);
         let links = [];
         const content = await page.content();
         let $ = cheerio.load(content);
-        let name = $('header__boardname.boardname').text();
+        let name = $('header__boardname.boardname').text(); //собираем ссылки на треды
         $('.post__detailpart.desktop a').each((idx, elem) => {
             let link = $(elem);
             links.push('https://2ch.hk' + link.attr('href'));
         })
-        fs.writeFileSync('2chLinks.txt', links)
+        fs.writeFileSync('2chLinks.txt', links) //добавляем ссылки в файл
         let images = [];
         let Threads = {};
 
-        async function getThread() {
+        async function getThread() { // функция для получения информации с треда
             const threadContent = await page.content();
             let $1 = cheerio.load(threadContent);
-            let threadName = $1('.post__title').text();
-            let opMessage = $1('.thread__oppost').text();
+            let threadName = $1('.post__title').text(); // получаем имя треда
+            let opMessage = $1('.thread__oppost').text(); // сообщение создателя
             let comments = [];
-            $('.post.post_type_reply').each((idx, elem) => {
+            $('.post.post_type_reply').each((idx, elem) => { //собираем комментарии
                 let comment = $(elem).text();
                 comments.push(comment);
             })
-            $('.desktop').each((i, e) => {
+            $('.desktop').each((i, e) => { //собираем ссылки на медиа 
                 let link = $(e).attr('href');
                 images.push(link);
             })
-            Threads[threadName] = {
+            Threads[threadName] = { 
                 opMessage: opMessage,
                 comments: comments
             }
         }
 
-        for (let key in links) {
+        for (let key in links) { // проходим функцией по нескольким тредам
             await page.goto(links[key]);
             await getThread();
         }
 
         Threads = JSON.stringify(Threads);
         fs.writeFileSync( board + '.txt', Threads)
-        fs.writeFileSync( board + '_imgs.txt', images)
+        fs.writeFileSync( board + '_imgs.txt', images) // записываем в файлы
     }
     await page.close();
     await context.close();
