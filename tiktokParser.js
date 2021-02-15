@@ -25,19 +25,25 @@ const fs = require("fs");
         page.press('form[id="index_login_form"] input[name="pass"]', 'Enter')
     ]);
     await page.goto('https://www.tiktok.com/');
+    // await page.click('.login-button')
+    // const [page1] = await Promise.all([
+    //     page.waitForEvent('popup'),https://www.tiktok.com/@_agentgirl_/video/6929102557151350017
+    //     page.frame({
+    //         url: 'https://www.tiktok.com/login/?enter_method=click_top_bar&redirect_url=https%3A%2F%2Fwww.tiktok.com%2F&enter_from=homepage_hot&is_modal=1&hide_close_btn=1'
+    //     }).click('text="Log in with VK"')
+    // ]);
+    //
+    // // Close page
+    // await page1.close();
     // await Promise.all([
     //     page.waitForNavigation(/*{ url: 'https://www.tiktok.com' }*/),
     //     page.click('.login-button'),
     //     page.click('text')
     // ]);
-
-    // login-button
-
     let profileData = {};
     let allProfilesData = [];
    async function getProfile(url){
        await page.goto(url)
-       // await page.waitForSelector('.share-info')
        const content = await page.content();
        let $ = cheerio.load(content);
        profileData.profileName = $('.share-info').text().replace('Follow', '');
@@ -50,25 +56,30 @@ const fs = require("fs");
     async function getPosts(n){
         await page.click('.like-icon');
         for(let i = 0; i <n; i++){
+            const content1 = await page.content();
+            let $2 = cheerio.load(content1);
+            $2('.view-more padding').each(async (idx, elem) => {
+                await page.click($(elem))
+            })
             await page.keyboard.press("ArrowRight")
             const content = await page.content();
             let $ = cheerio.load(content);
             let postInfo = $('.video-infos-container').text()
-            console.log(postInfo)
+            posts.push(postInfo + '\n')
         }
     }
-
+//view-more padding
 
     for (let profile of Profiles){
         if(profile !== undefined){
             await getProfile('https://www.tiktok.com/@' + profile);
             await page.screenshot({path: 'tiktok_screenshots/' +  profile + '_scr.png'})
-            await getPosts(4)
+            await getPosts(15)
 
         }
     }
 
-
+    fs.writeFileSync('tiktok_posts.txt', posts)
 
 
 
